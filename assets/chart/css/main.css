@@ -1,0 +1,154 @@
+/*@import url("https://fonts.googleapis.com/css?family=Poppins");*/
+
+html, body {
+    height: 100%;
+    font-family: 'Poppins', sans-serif;
+    padding: 0;
+    margin: 0;
+}
+
+section {
+    min-height: 100%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    /*padding: 50px 0;*/
+    position: relative;
+}
+
+section .github-badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+section h1 {
+    /*text-align: center;*/
+    margin-bottom: 70px;
+}
+
+section .hv-container {
+    flex-grow: 1;
+    overflow: auto;
+    justify-content: center;
+}
+
+.basic-style {
+    background-color: #ECF0F5;
+}
+
+.basic-style > h1 {
+    color: #ac2222;
+}
+
+.simple-card {
+    margin: 0;
+    background-color: #fff;
+    color: #DE5454;
+    padding: 30px;
+    border-radius: 7px;
+    min-width: 100px;
+    text-align: center;
+    box-shadow: 0 3px 6px rgba(204, 131, 103, 0.22);
+}
+
+.hv-item-parent p {
+    font-weight: bold;
+    color: #DE5454;
+}
+
+.management-hierarchy {
+    background-color: #303840;
+}
+
+.management-hierarchy > h1 {
+    color: #FFF;
+}
+
+.management-hierarchy .person {
+    text-align: center;
+}
+
+.management-hierarchy .person > img {
+    height: 110px;
+    border: 5px solid #FFF;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #fff;
+}
+
+.management-hierarchy .person > p.name {
+    background-color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: normal;
+    color: #3BAA9D;
+    margin: 0;
+    position: relative;
+}
+
+.management-hierarchy .person > p.name b {
+    color: rgba(59, 170, 157, 0.5);
+}
+
+.management-hierarchy .person > p.name:before {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 8px;
+    background-color: #fff;
+    left: 50%;
+    top: 0;
+    transform: translateY(-100%);
+}
+#loader {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 2000;
+    width: 150px;
+    height: 150px;
+    margin: -75px 0 0 -75px;
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Add animation to "page content" */
+.animate-bottom {
+    position: relative;
+    -webkit-animation-name: animatebottom;
+    -webkit-animation-duration: 1s;
+    animation-name: animatebottom;
+    animation-duration: 1s
+}
+
+@-webkit-keyframes animatebottom {
+    from { bottom:-100px; opacity:0 }
+    to { bottom:0px; opacity:1 }
+}
+
+@keyframes animatebottom {
+    from{ bottom:-100px; opacity:0 }
+    to{ bottom:0; opacity:1 }
+}
+
+#myDiv {
+    display: none;
+    text-align: center;
+}

@@ -1,0 +1,32 @@
+
+.navbar .navbar-nav{
+    display: inline-block;
+    float: none;
+    vertical-align: top;
+}
+
+.navbar .navbar-collapse{
+    text-align:  center;
+}
+
+.nav-tabs{
+    margin-left: auto;
+    border-bottom: 1px solid #ddd;
+    margin-right: auto;
+    display: table;
+    margin-bottom: 10px;
+    margin-top: 20px;
+     background-color: #f9f9f9;
+}
+
+
+.nav-tabs>li>a:hover{
+    border-radius: 0px;
+    background: #002E6E;
+    color: white;
+}
+
+.select-dropdown{
+    margin-top: 30px;
+    margin-left: 20px;
+}
