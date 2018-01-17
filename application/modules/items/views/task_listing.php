@@ -104,7 +104,8 @@ $this->load->view('include/header');
                         5=>'returntoproc',
                         6=>'approvedbypro',
                         7=>'approvedbyvc',
-                        8=>'rejectedbyvc'
+                        8=>'rejectedbyvc',
+                        9=>'partialapproved'
                     );
                     if(is_array(@$leaves)||is_object(@$leaves))
                         foreach($leaves as $lv)

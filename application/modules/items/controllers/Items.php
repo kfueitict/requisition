@@ -41,12 +41,15 @@ class Items extends CI_Controller {
             "approved"=>1,
             "rejected"=>2,
             "in-procurement"=>3,
+            "partial-approved"=>9,
+
         );
         $statusArrayTitle=array(
             "in-process"=>"Requests in Process",
             "approved"=>"Approved Requests",
             "rejected"=>"Rejected Requests",
             "in-procurement"=>"In Procurement",
+            "partial-approved"=> "Partial Approved Requests"
         );
         if(isset($statusArray[$parm])){
             $data['title']= $statusArrayTitle[$parm];
@@ -74,7 +77,41 @@ class Items extends CI_Controller {
             redirectToReffrer('Invalid input','message-error');
         }
     }
+    public function ispartial($parm){
 
+        $statusArray=array(
+            "partial-approved"=>1,
+
+        );
+        $statusArrayTitle=array(
+            "partial-approved"=> "Partial Approved Requests"
+        );
+        if(isset($statusArray[$parm])){
+            $data['title']= $statusArrayTitle[$parm];
+            if($this->dept==-1)
+            {
+                $conditions=array('emp_id'=>$this->session->userdata('emp_id'),'leave_req.ispartial'=>$statusArray[$parm]);
+            }
+            else
+            {
+                $conditions=array(" emp.department in ($this->dept) and leave_req.ispartial=$statusArray[$parm]");
+            }
+            $data['leaves']=join_select_Table_array('emp.slug,emp.name,emp.emp_no,leave_req.id,request_date,locked','leave_req',array(
+                array(
+                    'tbl'=>'leave_req',
+                    'field'=>'emp_id',
+                    'tbl2'=>'employees emp',
+                    'field2'=>'id',
+                    'type'=>null,
+                )
+            ),$conditions,null,null,null,null,null);
+
+            $this->load->view('leave_listing',$data);
+        }else
+        {
+            redirectToReffrer('Invalid input','message-error');
+        }
+    }
     public function wizard()
     {
         $data['css']=array(
@@ -204,7 +241,7 @@ class Items extends CI_Controller {
          'rowid' =>  $row,
          'qty'   => $value
      );
-        $this->cart->update($data);
+     $this->cart->update($data);
         echo 'success';
     }
 

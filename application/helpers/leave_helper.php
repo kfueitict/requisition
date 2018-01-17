@@ -163,14 +163,16 @@ function leave_request_status($status=null)
 {
     $req_status=array(
         0=>'In Process',
-        1=>'Request Approved ',
+        1=>'Request Recommended By Manager/HOD ',
         2=>'Request Rejected ',
         3=>'Refer to Vice Chancellor',
         4=>'Refer to Store',
         5=>'Verify & Return to Procurement',
         6=>'Approved & Ready for RFQ',
         7=>'Approved By Worthy vice Chancellor',
-        8=>'Rejected By Worthy vice Chancellor'
+        8=>'Rejected By Worthy vice Chancellor',
+        9=> 'Request Approved'
+
     );
     if($status==null)
         return $req_status;

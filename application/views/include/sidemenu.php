@@ -67,9 +67,9 @@
                 <ul class="treeview-menu">
                     <li><a href="<?php echo base_url('items') ?>"><i class="fa fa-dashboard"></i> Dashboard</a></li>
                     <li><a href="<?php echo base_url('items/status/in-process') ?>"><i class="fa fa-circle-o"></i> Pending for Approval </a></li>
+                    <li><a href="<?php echo base_url('items/ispartial/partial-approved') ?>"><i class="fa fa-circle-o"></i> Partial Approved </a></li>
                     <li><a href="<?php echo base_url('items/status/approved') ?>"><i class="fa fa-circle-o"></i> Approved</a></li>
                     <li><a href="<?php echo base_url('items/status/rejected') ?>"><i class="fa fa-circle-o"></i> Rejected</a></li>
-
                 </ul>
             </li>
             <?php if(is_admin(false)){?>
@@ -85,6 +85,7 @@
                     </a>
                     <ul class="treeview-menu">
                         <li><a href="<?php echo base_url('items/request/tasks/pending') ?>"><i class="fa fa-circle-o"></i> Pending</a></li>
+                        <li><a href="<?php echo base_url('items/request/tasks/partial') ?>"><i class="fa fa-circle-o"></i> Partial Completed</a></li>
                         <li><a href="<?php echo base_url('items/request/tasks/completed') ?>"><i class="fa fa-circle-o"></i> Completed</a></li>
                     </ul>
                 </li>

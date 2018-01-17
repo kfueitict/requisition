@@ -103,6 +103,9 @@ foreach (@$leave_transactions as $tr) {
                                         }else if(@$leave_data->status==8) //approve by vc
                                         {
                                             echo "<span class='label label-danger'>".$req_status[@$leave_data->status]."</span>" ;
+                                        }else if(@$leave_data->status==9) //approve by vc
+                                        {
+                                            echo "<span class='label label-success'>".$req_status[@$leave_data->status]."</span>" ;
                                         }
                                         ?></td>
                                     <th>Request Initiated by </th><td><?php echo @$leave_data->username ?></td>
@@ -199,14 +202,18 @@ foreach (@$leave_transactions as $tr) {
                             <thead>
                             <tr>
 <th></th>
-                                <th>QTY</th>
+                                <th>Requested Qty</th>
+                                <?php if(($isHod != $this->session->userdata('emp_id'))&& ($isProcur != $this->session->userdata('emp_id')) && ($isStore != $this->session->userdata('emp_id')) &&  (@$leave_data->status == 9)) { ?>
+                                <th>Approved Quantity</th>
+                                <th>Balance Quantity</th>
+                                <?php } ?>
                                 <?php if($isStore == $this->session->userdata('emp_id')) { ?>
                                     <th>Available Quantity</th>
                                     <th>Balance Quantity</th>
                                 <?php } ?>
                                 <th>Item Description</th>
-                                <?php if($isProcur == $this->session->userdata('emp_id')) { ?>
-                                <th>Available Quantity</th>
+                                <?php if($isStore == $this->session->userdata('emp_id')) { ?>
+                                <th>Stock</th>
                                 <?php }?>
                                 <th>Reason</th>
                                 <th>Comment</th>
@@ -231,10 +238,18 @@ foreach (@$leave_transactions as $tr) {
                                     <label class="qty"><input type="hidden"  name="qty[]" value="<?php echo $ct->qty ?>"><?php echo $ct->qty ?></label>
                                     <?php }?>
                                     </td>
+                                <?php if(($isHod != $this->session->userdata('emp_id'))&& ($isProcur != $this->session->userdata('emp_id')) && ($isStore != $this->session->userdata('emp_id')) &&  (@$leave_data->status == 9)) { ?>
+                                    <td>
+                                        <label class="available_qty"><input type="hidden"  name="available_qty[]" value="<?php echo $ct->available_qty ?>"><?php echo $ct->available_qty ?></label>
+                                    </td>
+                                    <td>
+                                        <label class="balance_qty"><input type="hidden"  name="balance_qty[]" value="<?php echo $ct->balance_qty ?>"><?php echo $ct->balance_qty ?></label>
+                                    </td>
+                                    <?php }?>
                                     <?php if($isStore == $this->session->userdata('emp_id')) { ?>
 
                                     <td style="width: 10%">
-                                        <input type="number" class="availableqty form-control" min="0"  value="<?php echo $ct->available_qty?>" />
+                                        <input type="number" max="<?php echo $ct->qty ?>" class="availableqty form-control" min="0"  value="<?php echo $ct->available_qty?>" />
                                         <input type="hidden" name="availableqty[]" value="0">
                                     </td>
 
@@ -244,15 +259,22 @@ foreach (@$leave_transactions as $tr) {
                                         <?php } else {?>
                                             <label class="balanceqty"><?php echo $ct->balance_qty ?></label>
                                         <?php } ?>
-                                        <input type="hidden"  name="balanceqty[]" value="0">
+                                        <input type="hidden"  name="balanceqty[]" value="<?php echo $ct->balance_qty ?>">
                                     </td>
                                 <?php } ?>
 
                                     <td style="width:20%" ><?php echo $ct->name?></td>
 
-                                <?php if($isProcur == $this->session->userdata('emp_id')) { ?>
-<!--                                    --><?php //echo custom_query("select stock from  mis_products where id =$ct->id ");?>
-                                   <td style="width:15%" ></td>
+                                <?php if($isStore == $this->session->userdata('emp_id')) { ?>
+                                    <?php
+                                    $da  = get_data('http://10.1.0.4:9090/erp/stock.php?id='.$ct->id);
+                                    $json1 = json_decode($da, true);
+                                    ?>
+                                   <td style="width:15%" ><?php
+                                       if(is_null($json1[0]["stock"])){
+                                       echo '0';
+                                       }else{$json1[0]["stock"];} ?>
+                                   </td>
                                     <?php }?>
                                     <td style="width:15%" ><?php echo $ct->reason?></td>
 

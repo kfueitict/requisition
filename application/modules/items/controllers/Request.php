@@ -16,13 +16,13 @@ class Request extends CI_Controller {
 
 
             //$link1 = 'http://10.1.0.4:9090/erp/products.php';
-        $link2 = 'http://10.1.0.4:9090/erp/stock.php';
+       // $link2 = 'http://10.1.0.4:9090/erp/stock.php';
        // $returned_content1 = get_data($link1);
-        $returned_content2 = get_data($link2);
+     //   $returned_content2 = get_data($link2);
 
         // Convert JSON string to Array
         //$someArray1 = json_decode($returned_content1, false);
-        $someArray2 = json_decode($returned_content2, false);
+        //$someArray2 = json_decode($returned_content2, false);
         //foreach($someArray1 as $key => $value) {
           //   'Product ID'.$value->m_product_id . ", " . $value->stock . "<br>";
            //}
@@ -71,8 +71,8 @@ class Request extends CI_Controller {
         }
     }
 
-    private function _submit(){
-
+    private function _submit()
+    {
         if($this->input->post('step')==1){
             $emp = generic_select_row('employees',array('id'=>$this->session->userdata('emp_id')));
 
@@ -186,8 +186,7 @@ class Request extends CI_Controller {
             }
             //customRedirect('items','Request(s) Proceeded Successfully');
         }
-        else
-            if($this->input->post('step')==''||$this->input->post('step'))
+        else if($this->input->post('step')==''||$this->input->post('step'))
             {
                  $data=array(
                     'request_id'=> $this->input->post('request_id'),
@@ -234,7 +233,7 @@ class Request extends CI_Controller {
         $user_dept = $this->_findDepartmentId($emp->id);
 
         if($this->_findImmediateHOD($user_dept) == $this->session->userdata('emp_id'))
-        {
+        { $res= '';
              if ($data['status'] == 1) {
                      $postData=array(
                      'req_id'=>$data['request_id'],
@@ -253,7 +252,7 @@ class Request extends CI_Controller {
 
                 send_email_applicant($data['request_id']);
                 send_email_next_authority($data['request_id']);
-                customRedirect('items/request/tasks/pending','Request has been approved.');
+                customRedirect('items/request/tasks/pending','Request has been Recommended By Manager/HOD.');
 
             }
              else if($data['status'] == 2){
@@ -317,16 +316,23 @@ class Request extends CI_Controller {
 
              }
              else if($data['status'] == 5){
-
+                 $isPartial = false;
                  $avai = $_POST["availableqty"];
                  $bal = $_POST["balanceqty"];
                  $checkRequest = $_POST["checkRequest"];
+
                  for($i=0;$i<count($avai);$i++)
                  {
+                     $isPartial = false;
+                     if($bal[$i]>0){
+                         $isPartial = true;
+                     }
                      $postData=array(
                          'available_qty'=>$avai[$i],
-                         'balance_qty'=>$bal[$i]
+                         'balance_qty'=>$bal[$i],
+                         'ispartial'=>$isPartial
                      );
+
                      $ids =  $checkRequest[$i];
                      if(update_db('mis_leave_req_body', 'rowid',$ids ,$postData)){
                          $postData1=array(
@@ -338,15 +344,22 @@ class Request extends CI_Controller {
                              'next_step'=>$this->_findImmediateHOD(20),
                              'proceeded' => 0,
                          );
+                         if($isPartial){
+                             update_db('leave_req', 'id', $data['request_id'], array('status' => 5,'ispartial'=>$isPartial));
+                             update_db('leave_req_transactions', 'req_id', $data['request_id'], array('proceeded' => 1));
+                             insert_db('leave_req_transactions',$postData1);
+                         }
+                         else{
+                             update_db('leave_req_transactions', 'req_id', $data['request_id'], array('proceeded' => 1));
+                             insert_db('leave_req_transactions',$postData1);
 
-                         update_db('leave_req_transactions', 'req_id', $data['request_id'], array('proceeded' => 1));
-                         insert_db('leave_req_transactions',$postData1);
-                         update_db('leave_req', 'id', $data['request_id'], array('status' => 5));
+                         }
                      };
                  }
+
                     send_email_applicant_for_delivery($data['request_id']);
                     send_email_next_authority($data['request_id']);
-                 customRedirect('items/request/tasks/pending','Requisition successfully verify & return to procurement  .','message-success');
+                    customRedirect('items/request/tasks/pending','Requisition successfully verify & return to procurement  .','message-success');
              }
              else if($data['status'] == 6){
 
@@ -363,7 +376,7 @@ class Request extends CI_Controller {
 
                  update_db('leave_req_transactions', 'req_id', $data['request_id'], array('proceeded' => 1));
                  insert_db('leave_req_transactions', $postData);
-                 update_db('leave_req', 'id', $data['request_id'], array('status' => 1));
+                 update_db('leave_req', 'id', $data['request_id'], array('status' => 9));
 
                  send_email_applicant($data['request_id']);
                  send_email_next_authority($data['request_id']);
@@ -457,7 +470,8 @@ class Request extends CI_Controller {
                 $bal = $_POST["balanceqty"];
                 $checkRequest = $_POST["checkRequest"];
                 for($i=0;$i<count($checkRequest);$i++)
-                {
+                 {
+
                     $postData=array(
                         'available_qty'=>$avai[$i],
                         'balance_qty'=>$bal[$i]
@@ -481,14 +495,17 @@ class Request extends CI_Controller {
                         insert_db('mis_leave_req_transactions',$postData1);
                        // update_db('mis_leave_req', 'id', $data['request_id'], array('status' => 5));
                     };
+
                 }
+
+
                 //Temp Disapled
                 send_email_next_authority($data['request_id']);
                 customRedirect('items/request/tasks/pending','Requisition successfully verify & return to procurement  .','message-success');
             }
                         //approved by procurement
             else if($this->input->post('refer')=='approvedbypro'){
-               // print_r("approvedbypro"); exit;
+
                 $postData=array(
                     'req_id'=>$data['request_id'],
                     'transaction_date' => date("Y-m-d H:i:s"),
@@ -603,80 +620,81 @@ class Request extends CI_Controller {
         else if($type=='step')
         {
 
-           try {
+            try {
                 if (!$this->_validateUserLeaves($id)) {
                     redirectToReffrer('Something went wrong. contact in IT Department', 'message-error');
                 }
 
-               $data['leave_data'] = join_select_Table_array(
-                   'req.*,emp.name,emp.img,emp.emp_no,emp.mobile_no,dept.title as department,des.title as designation,req.id as request_id,req.status', 'leave_req req', array(
-                       array(
-                           'tbl' => 'req',
-                           'field' => 'id',
-                           'tbl2' => 'leave_req_transactions trns',
-                           'field2' => 'req_id',
-                           'type' => null
-                       ),
-                       array(
-                           'tbl' => 'req',
-                           'field' => 'emp_id',
-                           'tbl2' => 'employees emp',
-                           'field2' => 'id',
-                           'type' => null
-                       ), array(
-                           'tbl' => 'emp',
-                           'field' => 'department',
-                           'tbl2' => 'departments dept',
-                           'field2' => 'id',
-                           'type' => null
-                       ), array(
-                           'tbl' => 'emp',
-                           'field' => 'designation',
-                           'tbl2' => 'designations des',
-                           'field2' => 'id',
-                           'type' => null,
-                       )), array('req.id' => $id),null,null,null,null,null)[0];
-             
+                $data['leave_data'] = join_select_Table_array(
+                    'req.*,emp.name,emp.img,emp.emp_no,emp.mobile_no,dept.title as department,des.title as designation,req.id as request_id,req.status', 'leave_req req', array(
+                    array(
+                        'tbl' => 'req',
+                        'field' => 'id',
+                        'tbl2' => 'leave_req_transactions trns',
+                        'field2' => 'req_id',
+                        'type' => null
+                    ),
+                    array(
+                        'tbl' => 'req',
+                        'field' => 'emp_id',
+                        'tbl2' => 'employees emp',
+                        'field2' => 'id',
+                        'type' => null
+                    ), array(
+                        'tbl' => 'emp',
+                        'field' => 'department',
+                        'tbl2' => 'departments dept',
+                        'field2' => 'id',
+                        'type' => null
+                    ), array(
+                        'tbl' => 'emp',
+                        'field' => 'designation',
+                        'tbl2' => 'designations des',
+                        'field2' => 'id',
+                        'type' => null,
+                    )), array('req.id' => $id),null,null,null,null,null)[0];
+
                 if (is_array($data['leave_data']) || is_object($data['leave_data'])) {
                     $data['leave_transactions'] = join_select_Table_array(
                         'emp.name,emp.emp_no,dept.title as department,trns.next_step,des.title as designation,
                          emp_next.name as name_n,emp_next.emp_no as emp_no_n,comments,dept_next.title as department_n,trns.status,transaction_date',
                         'leave_req_transactions trns', array(
-                            array(
-                                'tbl' => 'trns',
-                                'field' => 'emp_id',
-                                'tbl2' => 'employees emp',
-                                'field2' => 'id',
-                                'type' => null
-                            ), array(
-                                'tbl' => 'trns',
-                                'field' => 'next_step',
-                                'tbl2' => 'employees emp_next',
-                                'field2' => 'id',
-                                'type' => 'left'
-                            ), array(
-                                'tbl' => 'emp_next',
-                                'field' => 'department',
-                                'tbl2' => 'departments dept_next',
-                                'field2' => 'id',
-                                'type' => 'left'
-                            ), array(
-                                'tbl' => 'emp',
-                                'field' => 'department',
-                                'tbl2' => 'departments dept',
-                                'field2' => 'id',
-                                'type' => null
-                            ), array(
-                                'tbl' => 'emp',
-                                'field' => 'designation',
-                                'tbl2' => 'designations des',
-                                'field2' => 'id',
-                                'type' => null
-                            )
-                        ), array('trns.req_id' => $data['leave_data']->request_id),null,'transaction_date asc', null, null,null
+                        array(
+                            'tbl' => 'trns',
+                            'field' => 'emp_id',
+                            'tbl2' => 'employees emp',
+                            'field2' => 'id',
+                            'type' => null
+                        ), array(
+                            'tbl' => 'trns',
+                            'field' => 'next_step',
+                            'tbl2' => 'employees emp_next',
+                            'field2' => 'id',
+                            'type' => 'left'
+                        ), array(
+                            'tbl' => 'emp_next',
+                            'field' => 'department',
+                            'tbl2' => 'departments dept_next',
+                            'field2' => 'id',
+                            'type' => 'left'
+                        ), array(
+                            'tbl' => 'emp',
+                            'field' => 'department',
+                            'tbl2' => 'departments dept',
+                            'field2' => 'id',
+                            'type' => null
+                        ), array(
+                            'tbl' => 'emp',
+                            'field' => 'designation',
+                            'tbl2' => 'designations des',
+                            'field2' => 'id',
+                            'type' => null
+                        )
+                    ), array('trns.req_id' => $data['leave_data']->request_id),null,'transaction_date asc', null, null,null
                     );
 
                     $data["cartTable"] =  generic_select('leave_req_body',array('req_id'=>$id));
+
 
                     $emp_row = generic_select_row('employees', array('id' => $data['leave_data']->emp_id));
 
@@ -697,7 +715,7 @@ class Request extends CI_Controller {
                     }
                     if($data['isProcur'] == $this->session->userdata('emp_id') ){
 
-                        $data["DecisionDDL"] = array('' => 'Select Action','3' => 'Refer to Vice Chancellor ', '4' => 'Refer to Store ');
+                        $data["DecisionDDL"] = array('' => 'Select Action','3' => 'Refer to Vice Chancellor ', '6' => 'Recommend Request / Approve Request ');
                     }
                     if($data['isVc'] == $this->session->userdata('emp_id') ){
 
@@ -707,17 +725,13 @@ class Request extends CI_Controller {
 
                         $data["DecisionDDL"] = array('' => 'Select Action','5' => 'Verify & Retrn to Procurement ');
                     }
-                   $proAction =  generic_select_row('mis_leave_req ',array('id'=> $id));
-                    if($proAction->status == 5 || $proAction->status == 7){
-                        if($data['isProcur'] == $this->session->userdata('emp_id') ){
+                    $proAction =  generic_select_row('mis_leave_req ',array('id'=> $id));
+                    if($proAction->status == 7){
+                        if($data['isStore'] == $this->session->userdata('emp_id') ){
 
                             $data["DecisionDDL"] = array('' => 'Select Action','6' => 'Approve ');
                         }
-
                     }
-
-
-
                     if(!empty($_GET['download']) && $_GET['download']=='pdf')
                     {
 
@@ -731,7 +745,7 @@ class Request extends CI_Controller {
                         header('Content-Disposition: attachment;filename="item_request".pdf');
                         echo file_get_contents(FCPATH.'uploads/requisition/item_request.pdf');
 
-                       // echo file_get_contents(FCPATH."uploads/Requisition/{$emp_row->emp_no}_item_request.pdf");
+                        // echo file_get_contents(FCPATH."uploads/Requisition/{$emp_row->emp_no}_item_request.pdf");
 
                         customRedirect('items/request/tasks/completed','RFQ file downloaded Successfully.');
                     }
@@ -751,24 +765,6 @@ class Request extends CI_Controller {
 
             }
         }
-//        else if ($type=='RFQ'){
-//         try {
-//
-//             session_write_close();
-//             ob_start();
-//             $this->load->view('pdf/requisition_pdf');
-//
-//             $content = ob_get_clean();
-//             $html2pdf = new HTML2PDF('P', 'A4', 'fr');
-//             $html2pdf->writeHTML($content, isset($_GET['vuehtml']));
-//             $html2pdf->Output("{$id}_leave_request.pdf");
-//          }
-//          catch(exception $ex){
-//
-//              customRedirect('leaves/request/tasks/completed','Something went wrong. contact in IT Department', 'message-error');
-//        }
-//
-//        }
         else{
             redirectToReffrer('Invalid Input','message-error');
         }
@@ -778,6 +774,7 @@ class Request extends CI_Controller {
      * @param $leave_request_id
      * @return bool
      */
+
     private function _validateUserLeaves($leave_request_id)
     {
         if(!empty($_GET['emp']))
@@ -829,9 +826,37 @@ class Request extends CI_Controller {
                         'field2'=>'id',
                         'type'=>null
                     )
-                ),array('trns.next_step'=>$this->session->userdata('emp_id'),'proceeded'=>0)
+                ),array('trns.next_step'=>$this->session->userdata('emp_id'),'proceeded'=>0,'req.ispartial'=>0));
+        }else if($type=='partial'){
+
+            $data['isPro'] = $this->_findImmediateHOD(20);
+            $data['title']="Partial Request Completed so far";
+         $data['leaves']=join_select_Table_array(
+                'req.*,emp.name,emp.emp_no,dept.title as department','leave_req req',array(
+                array(
+                    'tbl'=>'req',
+                    'field'=>'id',
+                    'tbl2'=>'leave_req_transactions trns',
+                    'field2'=>'req_id',
+                    'type'=>null
+                ),
+                array(
+                    'tbl'=>'req',
+                    'field'=>'emp_id',
+                    'tbl2'=>'employees emp',
+                    'field2'=>'id',
+                    'type'=>null
+                ),array(
+                    'tbl'=>'emp',
+                    'field'=>'department',
+                    'tbl2'=>'departments dept',
+                    'field2'=>'id',
+                    'type'=>null
+
+                )
+            ),array('trns.next_step'=>$this->session->userdata('emp_id'),'proceeded'=>0,'req.ispartial'=>1)
             );
-        }else if('completed'){
+        }else if($type=='completed'){
             $data['isPro'] = $this->_findImmediateHOD(20);
             $data['title']="Request Completed so far";
             $data['leaves']=join_select_Table_array(
@@ -858,7 +883,6 @@ class Request extends CI_Controller {
                     )
                 ),array(" req_id in (".join_select_Table_array('req_id','leave_req_transactions',null,
                         array('next_step'=>$this->session->userdata('emp_id'),'proceeded'=>1),null,null,null,null,true).") and trns.status<>0  "),'req_id'
-
             );
         }
 
