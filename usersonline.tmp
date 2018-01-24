@@ -1,1 +1,1 @@
-a:5:{s:5:"since";s:10:"30-12-2017";s:9:"memonline";i:0;s:10:"totalvisit";i:418;s:10:"useronline";a:1:{s:3:"::1";a:4:{s:4:"time";i:1516077373;s:3:"uri";s:10:"/mis/login";s:8:"username";N;s:3:"bot";b:0;}}s:11:"guestonline";i:1;}
+a:5:{s:5:"since";s:10:"30-12-2017";s:9:"memonline";i:1;s:10:"totalvisit";i:495;s:10:"useronline";a:1:{s:3:"::1";a:4:{s:4:"time";i:1516785472;s:3:"uri";s:40:"/mis_requisition/Items/getCartItemsReady";s:8:"username";s:6:"rizwan";s:3:"bot";b:0;}}s:11:"guestonline";i:0;}

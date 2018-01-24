@@ -59,7 +59,7 @@
                 <tr>
                     <td style="width:75%;"></td>
                     <td style="width:25%;"> <div><p>Ref:  No. KFUEIT/LPRO/___ </p></div>
-                        <div> Date <?php echo date("Y/m/d")?></div>
+                        <div> Date <?php echo date("d/m/Y")?></div>
                     </td>
                 </tr>
                 </tbody>
@@ -78,8 +78,8 @@
                             <tr>
                                 <th>Sr. No.</th>
                                 <th>Item Name</th>
-                                <th>Requested Quantity</th>
-                                <th>Balance Quantity</th>
+<!--                                <th>Requested Quantity</th>-->
+                                <th>Required Quantity</th>
                                 <th>Price (PKR)</th>
                             </tr>
                             </thead>
@@ -89,7 +89,7 @@
                             <tr>
                                 <?php $k+=1; echo "<th>$k</th>"?>
                                 <td><?php echo $ite->name ?></td>
-                                <td><?php echo $ite->qty ?></td>
+<!--                                <td>--><?php //echo $ite->qty ?><!--</td>-->
                                 <td><?php echo $ite->balance_qty ?></td>
                                 <td></td>
                             </tr>

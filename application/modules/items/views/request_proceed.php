@@ -269,11 +269,15 @@ foreach (@$leave_transactions as $tr) {
                                     <?php
                                     $da  = get_data('http://10.1.0.4:9090/erp/stock.php?id='.$ct->id);
                                     $json1 = json_decode($da, true);
+
                                     ?>
                                    <td style="width:15%" ><?php
-                                       if(is_null($json1[0]["stock"])){
+                                       if(is_null($json1[0]["stock"]))
+                                       {
                                        echo '0';
-                                       }else{$json1[0]["stock"];} ?>
+                                       }
+                                       else{$json1[0]["stock"];
+                                       } ?>
                                    </td>
                                     <?php }?>
                                     <td style="width:15%" ><?php echo $ct->reason?></td>

@@ -65,6 +65,12 @@
 <script src="<?php echo base_url('assets') ?>/plugins/bootstrap-datetime-picker/bootstrap-datetimepicker.js"></script>
 <script src="<?php echo base_url('assets') ?>/chart/js/jquery.jOrgChart.js"></script>
 <script src="<?php echo base_url('assets/plugins/wizard') ?>/js/jquery.bootstrap.wizard.js" type="text/javascript"></script>
+<script src="<?php echo base_url('assets') ?>/js/jquery.fancybox.js" type="text/javascript"></script>
+<script src="<?php echo base_url('assets') ?>/js/jquery.fancybox.pack.js" type="text/javascript"></script>
+<script src="<?php echo base_url('assets') ?>/js/jquery.fancybox-buttons.js" type="text/javascript"></script>
+<script src="<?php echo base_url('assets') ?>/js/jquery.fancybox-media.js" type="text/javascript"></script>
+<link rel="stylesheet" href="<?php echo base_url('assets') ?>/css/jquery.fancybox.css">
+<link rel="stylesheet" href="<?php echo base_url('assets') ?>/css/jquery.fancybox-thumbs.css">
 
 
 <!--  Plugin for the Wizard -->
@@ -276,7 +282,14 @@
         });
     })
     $(document).ready(function() {
-//  checkTableLength()
+        $('.fancybox').fancybox();
+        $(".fancybox").fancybox({
+            helpers: {
+                title : {
+                    type : 'float'
+                }
+            }
+        });
 
         $('.cart_table').DataTable(
             {
@@ -300,10 +313,15 @@
                     success: function (data) {
                         var cate = JSON.parse(data);
                         $('#pro_item').empty();
+                        $categorydropdonw = $('#pro_item').html('');
                         if (cate.cat_query != false) {
-                            $.each(cate, function (i, d) {
-                                $('#pro_item').append("<option value='" + d[0].id + "'>" + d[0].name + "</option>");
+                            $.each(cate.cat_query, function(k, v) {
+                                $categorydropdonw.append('<option value="' + v.id + '">' + v.name + '</option>');
                             });
+//                            $.each(cate, function (i, d) {
+//                                console.log("<option value='" + d[0].id + "'>" + d[0].name + "</option>");
+//                                $('#pro_item').append("<option value='" + d[0].id + "'>" + d[0].name + "</option>");
+//                            });
                             $(".select2").select2();
                         }
                     },

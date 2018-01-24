@@ -200,12 +200,12 @@ class Items extends CI_Controller {
                 $result.= form_hidden($i.'[rowid]', $items['rowid']);
 
                 $result.="<tr><td  style='width:35%'><p>".$items['name']."</p></td>";
-                  $result.="<td  style='width: 10px!important;'>"
+                  $result.="<td  style='width: 5px!important;'>"
                 .form_input(array('name' => $i.'[qty]', 'value' => $items['qty'], 'maxlength' => '4', 'size' => '1','type' => 'number', 'class'=> 'qty form-control','id'=> $items['rowid']))
                 ."</td>";
 
                         if ($this->cart->has_options($items['rowid']) == TRUE):
-                            $result.="<td style='width:18%'>";
+                            $result.="<td style='width:20%'>";
 
                             foreach ($this->cart->product_options($items['rowid'])  as $option_name => $option_value):
 
@@ -214,7 +214,20 @@ class Items extends CI_Controller {
                             endforeach;
                             $result.="</td>";
                         endif;
+$pic ='';
 
+                            $da = get_data('http://10.1.0.4:9090/erp/products.php');
+                            $json1 = json_decode($da, true);
+                            $arraryValue = array_search($items['id'], array_column($json1, 'm_product_id'));
+                            $pic = $json1[$arraryValue]['sku'];
+
+                            if($pic != '') {
+                                //$result .= "<td style='width='30%'><img style=\"height: 35px;width: 35px;\" src='" . base_url() . "assets/products/" . $pic . ".png'  /></td>";
+                                $result .= "<td style='width='30%'><a class=\"fancybox\" href='" . base_url() . "assets/products/" . $pic . ".png' data-fancybox-group=\"gallery\" ><img data-fancybox-group=\"thumb\" style=\"height: 35px;width: 35px;\" src='" . base_url() . "assets/products/" . $pic . ".png'  /></a></td>";
+}                            else{
+                                // $result .= "<td style='width='30%'><img style=\"height: 35px;width: 35px;\" src='" . base_url() . "assets/products/logokfuiet.jpg'  /></td>";
+                                $result .= "<td style='width='30%'><a class=\"fancybox\" href='" . base_url() . "assets/products/logokfuiet.jpg' data-fancybox-group=\"gallery\" ><img style=\"height: 35px;width: 35px;\" src='" . base_url() . "assets/products/logokfuiet.jpg'  /></a></td>";
+                             }
 
 //                        if ($items['options']['i_reason']==NULL || $items['options']['i_reason']==""):
 //                            $result.="<td>";
@@ -222,7 +235,7 @@ class Items extends CI_Controller {
 //                            $result.="</td>";
 //                            endif;
 
-                   $result.="<td style='width:12%'><div class='text-center'><a href='#' id='updateCart' class='btn  btn-fill btn-info btn-sm' value=".$items['rowid']." role='button'><i class='fa fa-edit'></i></a>
+                   $result.="<td style='width:10%'><div class='text-center'><a href='#' id='updateCart' class='btn  btn-fill btn-info btn-sm' value=".$items['rowid']." role='button'><i class='fa fa-edit'></i></a>
                              <a href='#' id='deleteCart' class='btn  btn-fill btn-warning btn-sm' role='button' value=".$items['rowid']." ><i class='fa fa-close'></i></a><div></td>";
                 $i++;
 
@@ -352,5 +365,17 @@ class Items extends CI_Controller {
         $ret = json_encode($data);
         echo $ret;
     }
+    //get content from service
 }
 
+    function get_data($url) {
+
+        $ch = curl_init();
+        $timeout = 5;
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        return $data;
+    }

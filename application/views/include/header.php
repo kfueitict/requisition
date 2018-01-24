@@ -18,6 +18,7 @@
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.5 -->
+
       <link rel="stylesheet" href="<?php echo base_url('assets') ?>/bootstrap/css/bootstrap.min.css">
       <link rel="stylesheet" href="<?php echo base_url('assets') ?>/bootstrap/css/font-awesome.min.css">
       <link rel="stylesheet" href="<?php echo base_url('assets') ?>/bootstrap/css/ionicons.min.css">
@@ -39,10 +40,12 @@
     <link rel="stylesheet" href="<?php echo base_url('assets') ?>/plugins/daterangepicker/daterangepicker-bs3.css">
     <!-- bootstrap wysihtml5 - text editor -->
     <link rel="stylesheet" href="<?php echo base_url('assets') ?>/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
+
       <link rel="stylesheet" type="text/css" href="<?php echo base_url() ?>assets/css/calander.css">
       <link rel="stylesheet" type="text/css" href="<?php echo base_url() ?>assets/css/structure.css">
       <link rel="stylesheet" type="text/css" href="<?php echo base_url() ?>assets/plugins/toastr/toastr.min.css">
-      
+
+
       <!-- Custom CSS -->
       
 <!--       <link rel="stylesheet" type="text/css" href="<?php echo base_url() ?>assets/custom/custom.css">-->
