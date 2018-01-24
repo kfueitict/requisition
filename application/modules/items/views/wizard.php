@@ -61,6 +61,7 @@ $this->load->view('include/header-without-sidemenu');
                                                         </label>
                                                         <select name="item" id="category_ddl" required class="form-control select2" style="width: 100%">
                                                             <?php
+
                                                             if (is_array(@$list_cat) || is_object(@$list_cat)) {
                                                                 if (count(@$list_cat) > 1) {
                                                                     echo "<option value=\"-1\">Select Item</option>";
@@ -80,9 +81,10 @@ $this->load->view('include/header-without-sidemenu');
                                                         <label for="leave_type">Items
                                                             <small>(required)</small>
                                                         </label>
-                                                        <select name="item" id="pro_item" required
-                                                                class="form-control select2"
-                                                                style="width: 100%"></select>
+                                                        <select name="item" id="pro_item" required class="form-control select2" style="width: 100%">
+
+
+                                                        </select>
 
                                                 </div>
                                                 <div class="col-md-4">
@@ -130,6 +132,7 @@ $this->load->view('include/header-without-sidemenu');
                                                         <th>Item Description</th>
                                                         <th>QTY</th>
                                                         <th>Reason</th>
+                                                        <th>Image</th>
                                                         <th>Action</th>
                                                     </tr>
                                                     </thead>
