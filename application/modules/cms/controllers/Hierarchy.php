@@ -101,7 +101,7 @@ class Hierarchy extends CI_Controller {
                 'field2'=>'id',
                 'type'=>null
             )
-            ),array("des.bps >"=>16,'job_status'=>'Active')
+            ),array("des.bps >="=>16,'job_status'=>'Active')
         );
         $this->load->view('hierarchy',$data);
 	}

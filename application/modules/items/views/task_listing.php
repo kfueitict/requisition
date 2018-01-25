@@ -15,6 +15,8 @@ $this->load->view('include/header');
     tr.rejected {
         background-color: rgba(252, 9, 61,0.16) !important;
     }
+
+
 </style>
 <div class="content-wrapper">
         <!-- Content Header (Page header) -->
@@ -105,7 +107,9 @@ $this->load->view('include/header');
                         6=>'approvedbypro',
                         7=>'approvedbyvc',
                         8=>'rejectedbyvc',
-                        9=>'partialapproved'
+                        9=>'partialapproved',
+                        10=>'verifiedandclosed',
+                        11=>'withdraw'
                     );
                     if(is_array(@$leaves)||is_object(@$leaves))
                         foreach($leaves as $lv)
@@ -125,7 +129,7 @@ $this->load->view('include/header');
                                     <?php if(($status[$lv->status] =='approved') && ($isPro == $this->session->userdata('emp_id'))) { ?>
                                     <a href="<?php echo base_url('items/request/ru/step/'.$lv->id) ?>?download=pdf" class=" btn btn-info btn-sm" title="Download RFQ"><i class="glyphicon glyphicon-list-alt"></i></a>
                                     <?php } else {?>
-                                    <a  href="<?php echo base_url('items/request/ru/step/'.$lv->id) ?>?download=pdf" role='button' class=" btn btn-info btn-sm" title="Download RFQ" disabled><i class="glyphicon glyphicon-list-alt"></i></a>
+                                    <a  href="<?php echo base_url('items/request/ru/step/'.$lv->id) ?>?download=pdf" role='button' class=" btn btn-info btn-sm" title="Download RFQ" style="display: none" ><i class="glyphicon glyphicon-list-alt"></i></a>
                                     <?php } ?>
                                 </td>
                             </tr>

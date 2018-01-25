@@ -42,6 +42,7 @@ class Items extends CI_Controller {
             "rejected"=>2,
             "in-procurement"=>3,
             "partial-approved"=>9,
+            'withdrawn'=>11
 
         );
         $statusArrayTitle=array(
@@ -49,7 +50,8 @@ class Items extends CI_Controller {
             "approved"=>"Approved Requests",
             "rejected"=>"Rejected Requests",
             "in-procurement"=>"In Procurement",
-            "partial-approved"=> "Partial Approved Requests"
+            "partial-approved"=> "Partial Approved Requests",
+            "withdrawn"=> "Requests Withdrawn"
         );
         if(isset($statusArray[$parm])){
             $data['title']= $statusArrayTitle[$parm];

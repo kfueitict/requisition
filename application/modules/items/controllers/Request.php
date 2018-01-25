@@ -77,38 +77,34 @@ class Request extends CI_Controller {
             $emp = generic_select_row('employees',array('id'=>$this->session->userdata('emp_id')));
 
             $hod = $this->_findImmediateHOD($emp->department);
+
             if($hod == $this->session->userdata('emp_id')) {
                 $hod = $this->_findImmediateHOD($this->_findParentDept($this->_findDepartmentId($this->session->userdata('emp_id'))));
             }
+
             if ($this->input->post())
             {
-                $req_data = array(
-                    'emp_id'=> $emp->id,
-                    'username' => $this->session->userdata('username'),
-                    'status' => 0,
-                    'request_date' => date("Y-m-d H:i:s"),
-                    'reason' => $this->input->post_get('reason')
-                );
+                if($emp->id == $this->_findImmediateHOD($emp->department)){
+                    $req_data = array(
+                        'emp_id'=> $emp->id,
+                        'username' => $this->session->userdata('username'),
+                        'status' => 1,
+                        'request_date' => date("Y-m-d H:i:s"),
+                        'reason' => $this->input->post_get('reason')
+                    );
+                }else{
+                    $req_data = array(
+                        'emp_id'=> $emp->id,
+                        'username' => $this->session->userdata('username'),
+                        'status' => 0,
+                        'request_date' => date("Y-m-d H:i:s"),
+                        'reason' => $this->input->post_get('reason')
+                    );
+                }
             }
-//            if($emp->id==$hod && $hod!=448)
-//            {
-//                //$hod=$this->_findImmediateReportingHead($this->_findParentDept($emp->department),true);
-//                $hod=448;// if applicant is HOD then request forward to VC direct
-//            }
-//            else
-//            {
-//                $hod=$this->_findImmediateReportingHead($emp->department,true);
-//
-//                if($emp->id==$hod)
-//                {
-//                    $hod=$this->_findImmediateHOD($emp->department);
-//                }
-//                else
-//                {}
-//            }
-            if(insert_db('leave_req',$req_data)){
+            if(insert_db('leave_req',$req_data))
+            {
                 $id = $this->db->insert_id();
-              //  print_r($this->cart->contents());exit;
                 foreach($this->cart->contents() as $value)
                 {
                     $value = array(
@@ -133,20 +129,31 @@ class Request extends CI_Controller {
                     );
                     $this->cart->update($value);
                 }
-
+                if($emp->id == $this->_findImmediateHOD($emp->department)){
                 $postData=[
                     'req_id'=>$id,
                     'transaction_date' => date("Y-m-d H:i:s"),
                     'emp_id' => $this->session->userdata('emp_id'),
-                    'comments' => $this->input->post('reason'),
+                    'comments' => 'Recommanded',
                     'username'=>$this->session->userdata('username'),
-                    'next_step'=>$hod
-                ];
+                    'next_step'=>$hod,
+                    'status'=>1
+                ];}
+                else{
+                    $postData=[
+                        'req_id'=>$id,
+                        'transaction_date' => date("Y-m-d H:i:s"),
+                        'emp_id' => $this->session->userdata('emp_id'),
+                        'comments' => $this->input->post('reason'),
+                        'username'=>$this->session->userdata('username'),
+                        'next_step'=>$hod
+                    ];
+                }
                 if(insert_db('leave_req_transactions',$postData))
                 {
                     //send email notification to applicant and next authority
                     //Temp Disapled
-                    send_email_applicant($id);
+                   send_email_applicant($id);
                    send_email_next_authority($id);
                   customRedirect('items','Item(s) Requisition has been submitted successfully');
                 }
@@ -160,6 +167,10 @@ class Request extends CI_Controller {
             {
                 redirectToReffrer(implode(' ',$this->db->errors()),'message-error');
             }
+        }
+        else if ($this->input->post('step')=='withdrawn'){
+            print_r('abc');
+            exit;
         }
         else if($this->input->post('step')=='task_listing')
         {
@@ -188,12 +199,15 @@ class Request extends CI_Controller {
         }
         else if($this->input->post('step')==''||$this->input->post('step'))
             {
+
                  $data=array(
                     'request_id'=> $this->input->post('request_id'),
                     'comments'  => $this->input->post('comments'),
                     'status'    => $this->input->post('status')
                 );
+
                 $post_result = $this->_submit_request($data);
+
                 if($post_result['status']==false)
                 {
                     customRedirect('items',$post_result['msg'],'message-error');
@@ -208,6 +222,7 @@ class Request extends CI_Controller {
     private function _submit_request($data)
     {
         $emp= generic_select_row('employees',array('id'=>$this->session->userdata('emp_id')));
+
         $applicant=join_select_Table_array('designations.bps,emp.department','employees emp',array(
             array(
                 'tbl'=>'emp',
@@ -231,9 +246,36 @@ class Request extends CI_Controller {
         $dept_parent = $this->_findParentDept($emp->department);
         $hod_parent = $this->_findImmediateHOD($dept_parent);
         $user_dept = $this->_findDepartmentId($emp->id);
+        if($this->session->userdata('emp_id') == $emp->id){
+
+            if($data['status'] == 11){
+                print_r('ata');
+                $postData=array(
+                    'req_id'=>$data['request_id'],
+                    'transaction_date' => date("Y-m-d H:i:s"),
+                    'emp_id' => $this->session->userdata('emp_id'),
+                    'comments' => $data['comments'],
+                    'status' => 11,
+                    'proceeded' => 0,
+                    'username' => $this->session->userdata('username'),
+                    'next_step' => -1,
+                );
+                update_db('leave_req_transactions', 'req_id', $data['request_id'], array('proceeded' => 1));
+                //update_db('leave_req_body', 'req_id', $data['request_id'],array('comment' <= "Recommanded"));
+                insert_db('leave_req_transactions', $postData);
+                update_db('leave_req', 'id', $data['request_id'], array('status' => 11));
+
+                send_email_applicant($data['request_id']);
+               // send_email_next_authority($data['request_id']);
+                customRedirect('items/status/withdrawn','Request has been Withdrawn.');
+            }
+
+        }
 
         if($this->_findImmediateHOD($user_dept) == $this->session->userdata('emp_id'))
-        { $res= '';
+        {
+
+            $res= '';
              if ($data['status'] == 1) {
                      $postData=array(
                      'req_id'=>$data['request_id'],
@@ -416,6 +458,23 @@ class Request extends CI_Controller {
                  update_db('leave_req', 'id', $data['request_id'], array('status' => 8));
 
                  customRedirect('items/request/tasks/pending', 'Requisition Rejected by Vice Chancellor.');
+             }
+             else if($data['status'] == 10){
+                 $postData = array(
+                     'req_id' => $data['request_id'],
+                     'transaction_date' => date("Y-m-d H:i:s"),
+                     'emp_id' => $this->session->userdata('emp_id'),
+                     'status' => 1,
+                     'proceeded' => 0,
+                     'username' => $this->session->userdata('username'),
+                     'next_step' => -1,
+                 );
+
+                 update_db('leave_req_transactions', 'req_id', $data['request_id'], array('proceeded' => 1));
+                 insert_db('leave_req_transactions', $postData);
+                 update_db('leave_req', 'id', $data['request_id'], array('status' => 1));
+
+                 customRedirect('items/request/tasks/completed', 'Requisition Verifed and Closed By Store.');
              }
         }
 
@@ -652,7 +711,7 @@ class Request extends CI_Controller {
                         'tbl2' => 'designations des',
                         'field2' => 'id',
                         'type' => null,
-                    )), array('req.id' => $id),null,null,null,null,null)[0];
+                    )), array('req.id' => $id),null,null,null,null)[0];
 
                 if (is_array($data['leave_data']) || is_object($data['leave_data'])) {
                     $data['leave_transactions'] = join_select_Table_array(
@@ -709,6 +768,10 @@ class Request extends CI_Controller {
                     $data['proItems'] = generic_select('leave_req_body',array('req_id'=>$id,'balance_qty >'=>0));
 
 
+                    if($data['leave_data']->emp_id == $this->session->userdata('emp_id') ){
+
+                        $data["DecisionDDL"] = array('' => 'Select Action','11' => 'Withdraw Request');
+                    }
                     if($data['isHod'] == $this->session->userdata('emp_id') ){
 
                         $data["DecisionDDL"] = array('' => 'Select Action','1' => 'Recommend Request', '2' => 'Reject Request');
@@ -723,7 +786,7 @@ class Request extends CI_Controller {
                     }
                     if($data['isStore'] == $this->session->userdata('emp_id') ){
 
-                        $data["DecisionDDL"] = array('' => 'Select Action','5' => 'Verify & Retrn to Procurement ');
+                        $data["DecisionDDL"] = array('' => 'Select Action','5' => 'Verify & Retrn to Procurement ','10' => 'Verify & Closed ');
                     }
                     $proAction =  generic_select_row('mis_leave_req ',array('id'=> $id));
                     if($proAction->status == 7){
@@ -827,7 +890,8 @@ class Request extends CI_Controller {
                         'type'=>null
                     )
                 ),array('trns.next_step'=>$this->session->userdata('emp_id'),'proceeded'=>0,'req.ispartial'=>0));
-        }else if($type=='partial'){
+        }
+        else if($type=='partial'){
 
             $data['isPro'] = $this->_findImmediateHOD(20);
             $data['title']="Partial Request Completed so far";
@@ -856,7 +920,8 @@ class Request extends CI_Controller {
                 )
             ),array('trns.next_step'=>$this->session->userdata('emp_id'),'proceeded'=>0,'req.ispartial'=>1)
             );
-        }else if($type=='completed'){
+        }
+        else if($type=='completed'){
             $data['isPro'] = $this->_findImmediateHOD(20);
             $data['title']="Request Completed so far";
             $data['leaves']=join_select_Table_array(

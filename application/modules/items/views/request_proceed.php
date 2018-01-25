@@ -106,6 +106,13 @@ foreach (@$leave_transactions as $tr) {
                                         }else if(@$leave_data->status==9) //approve by vc
                                         {
                                             echo "<span class='label label-success'>".$req_status[@$leave_data->status]."</span>" ;
+                                        }else if(@$leave_data->status==10) //approve by vc
+                                        {
+                                            echo "<span class='label label-success'>".$req_status[@$leave_data->status]."</span>" ;
+                                        }
+                                        else if(@$leave_data->status==11) //approve by vc
+                                        {
+                                            echo "<span class='label label-danger'>".$req_status[@$leave_data->status]."</span>" ;
                                         }
                                         ?></td>
                                     <th>Request Initiated by </th><td><?php echo @$leave_data->username ?></td>
@@ -201,10 +208,10 @@ foreach (@$leave_transactions as $tr) {
                         <table id=".62000" cellpadding="6" cellspacing="1" style="width:100%" border="0" class="table table-hover table-bordered table-striped">
                             <thead>
                             <tr>
-<th></th>
+                                <th></th>
                                 <th>Requested Qty</th>
                                 <?php if(($isHod != $this->session->userdata('emp_id'))&& ($isProcur != $this->session->userdata('emp_id')) && ($isStore != $this->session->userdata('emp_id')) &&  (@$leave_data->status == 9)) { ?>
-                                <th>Approved Quantity</th>
+                                        <th>Approved Quantity</th>
                                 <th>Balance Quantity</th>
                                 <?php } ?>
                                 <?php if($isStore == $this->session->userdata('emp_id')) { ?>
@@ -228,24 +235,25 @@ foreach (@$leave_transactions as $tr) {
                                     <td style="width: 5%"><input class="checkRequest"  value="<?php echo $ct->rowid ?>" type="checkbox"><input type="hidden"  name="checkRequest[]" value="<?php echo $ct->rowid ?>"></td>
                                   <?php } else {?>
                                       <td style="width: 5%"><input disabled class="checkRequest"  value="<?php echo $ct->rowid ?>" type="checkbox"><input type="hidden"  name="checkRequest[]" value="<?php echo $ct->rowid ?>"></td>
-                                <?php } ?>
+                                  <?php } ?>
 
+                                  <td style="width: 10%">
+                                  <?php if(@$leave_data->status==0 && ($this->session->userdata('emp_id') !=@$leave_data->emp_id)) { ?>
+                                      <input type="text" class="qty form-control" value="<?php echo $ct->qty ?>">
+                                  <?php } else { ?>
+                                  <label class="qty"><input type="hidden"  name="qty[]" value="<?php echo $ct->qty ?>"><?php echo $ct->qty ?></label>
+                                  <?php }?>
+                                  </td>
 
-                                    <td style="width: 10%">
-                                    <?php if(@$leave_data->status==0) { ?>
-                                        <input type="text" class="qty form-control" value="<?php echo $ct->qty ?>">
-                                    <?php } else { ?>
-                                    <label class="qty"><input type="hidden"  name="qty[]" value="<?php echo $ct->qty ?>"><?php echo $ct->qty ?></label>
-                                    <?php }?>
-                                    </td>
-                                <?php if(($isHod != $this->session->userdata('emp_id'))&& ($isProcur != $this->session->userdata('emp_id')) && ($isStore != $this->session->userdata('emp_id')) &&  (@$leave_data->status == 9)) { ?>
-                                    <td>
-                                        <label class="available_qty"><input type="hidden"  name="available_qty[]" value="<?php echo $ct->available_qty ?>"><?php echo $ct->available_qty ?></label>
-                                    </td>
-                                    <td>
-                                        <label class="balance_qty"><input type="hidden"  name="balance_qty[]" value="<?php echo $ct->balance_qty ?>"><?php echo $ct->balance_qty ?></label>
-                                    </td>
-                                    <?php }?>
+                                  <?php if(($isHod != $this->session->userdata('emp_id'))&& ($isProcur != $this->session->userdata('emp_id')) &&  (@$leave_data->status == 9)) { ?>
+                                  <td>
+                                      <label class="available_qty"><input type="hidden"  name="available_qty[]" value="<?php echo $ct->available_qty ?>"><?php echo $ct->available_qty ?></label>
+                                  </td>
+                                  <td>
+                                      <label class="balance_qty"><input type="hidden"  name="balance_qty[]" value="<?php echo $ct->balance_qty ?>"><?php echo $ct->balance_qty ?></label>
+                                  </td>
+                                  <?php }?>
+
                                     <?php if($isStore == $this->session->userdata('emp_id')) { ?>
 
                                     <td style="width: 10%">
@@ -282,7 +290,7 @@ foreach (@$leave_transactions as $tr) {
                                     <?php }?>
                                     <td style="width:15%" ><?php echo $ct->reason?></td>
 
-                                 <?php if($leave_data->status==0) { ?>
+                                 <?php if($leave_data->status==0 && ($this->session->userdata('emp_id') !=@$leave_data->emp_id)) { ?>
                                     <td style="width:20%" >
                                         <input class="form-control approveI" value="<?php echo $ct->comment ?>" type="text" />
                                     </td>
@@ -292,7 +300,7 @@ foreach (@$leave_transactions as $tr) {
 
                                     <td style="width:10%"><div style="text-align: center;">
 
-                                        <?php if($leave_data->status==0) { ?>
+                                        <?php if($leave_data->status==0 && ($this->session->userdata('emp_id') !=@$leave_data->emp_id)) { ?>
                                             <a href='#' id="approveItem" required class='btn btn-fill btn-success btn-sm' value="<?php echo $ct->rowid?>" role='button'><i class='fa fa-check'></i></a>
                                             <a href='#'  class='pophov btn btn-fill btn-info btn-sm' data-id="<?php echo $ct->id?>"  value="<?php echo $ct->rowid?>" data-toggle="popover" data-easein="flipBounceXIn" animation="false" data-placement="left" role='button'><i class="fa fa-signal" aria-hidden="true"></i></i></a>
                                         <?php } else {?>
@@ -300,8 +308,8 @@ foreach (@$leave_transactions as $tr) {
                                         <?php }?>
 
                                         <?php if($isStore == $this->session->userdata('emp_id')) { ?>
-                                            <a href='#' id="updateCart" class='btn btn-fill btn-info btn-sm' value="<?php echo $ct->rowid?>" role='button'><i class='fa fa-edit'></i></a>
-                                            <a href='#' id="deletedb" class='btn btn-fill btn-warning btn-sm' role='button' value="<?php echo $ct->rowid?>"><i class='fa fa-close'></i></a>
+                                            <a href='#' style="display: none" id="updateCart" class='btn btn-fill btn-info btn-sm' value="<?php echo $ct->rowid?>" role='button'><i class='fa fa-edit'></i></a>
+                                            <a href='#' style="display: none" id="deletedb" class='btn btn-fill btn-warning btn-sm' role='button' value="<?php echo $ct->rowid?>"><i class='fa fa-close'></i></a>
                                         <?php }?>
 
                                         </div>
@@ -317,7 +325,7 @@ foreach (@$leave_transactions as $tr) {
 
                     <div class="form-group">
                         <?php
-                        if($this->session->userdata('emp_id')== $next_step)
+                        if($this->session->userdata('emp_id')== $next_step || ($this->session->userdata('emp_id') == @$leave_data->emp_id  && @$leave_data->status == 0) )
                         {?>
                             <div class="box ">
                                 <div class="box-header with-border">

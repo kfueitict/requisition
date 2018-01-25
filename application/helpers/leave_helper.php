@@ -171,7 +171,9 @@ function leave_request_status($status=null)
         6=>'Approved & Ready for RFQ',
         7=>'Approved By Worthy vice Chancellor',
         8=>'Rejected By Worthy vice Chancellor',
-        9=> 'Request Approved'
+        9=> 'Request Approved',
+        10=>'Verified & Closed Request',
+        11=>'Request Withdrawn'
 
     );
     if($status==null)
